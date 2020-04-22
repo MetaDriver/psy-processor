@@ -36,6 +36,9 @@
 //    import AppFooter from '~/components/AppFooter.vue'
 
     export default {
+        head: {
+            title: 'Домашнаяя страница'
+        },
         components: {
             Logo,
 //            AppHeader,
