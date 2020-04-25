@@ -6,6 +6,9 @@
 
 <script>
     export default {
+        head: {
+            title: 'PsyProcessor : Сессия'
+        },
         layout: 'default',
         name: "session",
         components: {},

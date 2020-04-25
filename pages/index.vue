@@ -30,6 +30,6 @@
     .Main {
         width: 100%;
         height: auto;
-        padding: 100px 20px 50px;
+        padding: 60px 0 50px;
     }
 </style>

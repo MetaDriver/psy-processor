@@ -34,11 +34,14 @@
         top: 0;
         padding: 0 20px;
         width: 100%;
-        height: 50px;
+        height: 38px;
         background-color: hsl(50, 30%, 95%);
         border-bottom: 1px solid hsl(50, 30%, 75%);
         display: flex;
         align-items: center;
+        a {
+            color: hsl(180, 100%, 30%);
+        }
 
         &>* {
             flex: 0 0 auto;
@@ -48,9 +51,9 @@
             width: 110px;
             padding: 0 0 0 0px;
             font-family: 'Arial';
-            font-size: 40px;
+            font-size: 30px;
             font-weight: bold;
-            color: hsl(50, 99%, 22%);
+            color: hsl(180, 99%, 22%);
             transform-origin: left bottom;
             transform: scaleX(.333);
         }
@@ -59,7 +62,7 @@
             display: flex;
             align-self: stretch;
             align-items: stretch;
-
+            perspective: 500px;
             &>* {
                 flex: 0 0 auto;
                 display: block;
@@ -68,7 +71,8 @@
                 display: flex;
                 align-items: center;
                 width: auto;
-                padding: 3px 15px 0;
+                padding: 3px 10px 0;
+                font-size:13px;
                 &:hover {
                      background-color: hsl(50, 50%, 98%);
                     &.nuxt-link-active {
@@ -77,9 +81,12 @@
                  }
                 &.nuxt-link-active {
                     cursor: default;
-                    color: black;
+                    /*color: black;*/
+                    color:  hsl(50, 99%, 20%);
+                    text-shadow: 0 0 0  hsl(50, 99%, 10%);
                     background-color: white;
                     box-shadow: inset 0 -3px 1px -2px hsl(50, 99%, 22%);
+                    transform: translate3d(0,2px,20px);
                  }
             }
         }

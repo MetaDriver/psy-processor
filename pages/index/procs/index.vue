@@ -6,6 +6,9 @@
 
 <script>
     export default {
+        head: {
+            title: 'PsyProcessor : Процессы'
+        },
         name: "ProcessList",
         components: {},
         props: [],
