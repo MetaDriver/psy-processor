@@ -28,6 +28,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+      { src: '~/plugins/localStorage.js', ssr: false },
   ],
   /*
   ** Nuxt.js dev-modules
@@ -56,6 +57,9 @@ export default {
     /*
     ** You can extend webpack config here
     */
+      vendor: [
+          //'vuex-persistedstate'
+      ],
     extend (config, ctx) {
     }
   }
