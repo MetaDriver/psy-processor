@@ -8,8 +8,13 @@
                     <div class="ppcEditorInput mt-1">
                     <!--<div class="type-select">-->
                         <label for="type">Тип узла</label>
-                        <select name="type" id="type" v-model="currentNode.type">
-                            <option :value="item.value" v-for="item in types">{{item.title}}</option>
+                        <select name="type" id="type"
+                                v-model="currentNode.type"
+                                @change="changeNodeType">
+                            <option :value="item.value"
+                                    v-for="item in types"
+                                    :disabled="currentNode.attrs.nodeName.value==='root' && item.value==='quest'"
+                            >{{item.title}}</option>
                         </select>
                     </div>
                     <div  v-for="(attr, i) in attrs">
@@ -21,10 +26,14 @@
             </div>
             <div class="struct-panel">
                 <div class="head">{{'Процесс:'}} {{value.processTitle}}</div>
-                <div class="body pt-3">
-                    test<br>
-                    test<br>
-
+                <div class="body pt-3 selected">
+                    <ppcNode  class="selected"
+                        :node="value.rootNode"
+                        :owner="value"
+                        :createNodeFunc="createNewNode"
+                        @select="selectNode"
+                        :index="0"
+                    />
                 </div>
             </div>
         </div>
@@ -33,20 +42,23 @@
 
 <script>
     import ppcEditorInput from "~/components/PpConstructor/ppcEditorInput.vue";
-
+    import ppcNode from "~/components/PpConstructor/ppcNode.vue"
+    import {nodeTypes} from "~/assets/js/const.js"
     export default {
         name: "PpConstructor",
-        components: {ppcEditorInput,},
+        components: {ppcEditorInput, ppcNode},
         props: ['value'],
         data() {
             return {
                 currentNode: null,
-                types: [
-                    {value:'quest', title:'Вопрос'},
-                    {value:'loopList', title:'Циклический список',},
-                    {value:'randList', title:'Вероятностный список'},
-//                    {value:'linearList', title:'Простой список'},
-                ]
+                currentNodeLastType: 'loopList',
+                types: nodeTypes.arr,
+//                    [
+//                    {value:'quest', title:'Вопрос'},
+//                    {value:'loopList', title:'Циклический список',},
+//                    {value:'randList', title:'Вероятностный список'},
+////                    {value:'linearList', title:'Простой список'},
+//                ],
             }
         },
         computed: {
@@ -56,7 +68,70 @@
                     });
             },
         },
-        methods: {},
+        methods: {
+            createNewNode(){
+                return {
+                    type: 'loopList',
+                    attrs: this.createAttrs('loopList'),
+                    list: [],
+                };
+            },
+            changeNodeType(){
+                console.log("! changeNodeType");
+            },
+            changeAttrs(type) {
+                this.currentNode.attrs = {
+                    ...createAttrs(this.currentNode.type),
+                    ...this.currentNode.attrs,
+                };
+            },
+            /**
+             *
+             * @param type String
+             */
+            createAttrs(type){
+                let a = {
+                    nodeName: {
+                        inpType: 'text',
+                        inpLabel: 'Название узла (optional)',
+                        value: 'new node',
+                    },
+                };
+                switch(type) {
+                    case 'quest': {
+                        this.$set(a, 'quest', {
+                            inpType: 'text',
+                            inpLabel: 'Вопрос',
+                            value: '',
+                        });
+                        break;
+                    }
+                    case 'loopList': {
+                        this.$set(a, 'loopCount', {
+                            inpType: 'number',
+                            inpLabel: 'Количество циклов',
+                            value: 0, // ноль означает бесконечный цикл
+                        });
+                        break;
+                    }
+                    case 'randList': {
+                        this.$set(a, 'loopCount', {
+                            inpType: 'number',
+                            inpLabel: 'Количество циклов',
+                            value: 1,  // ноль означает бесконечный цикл
+                        });
+                        break;
+                    }
+                    default: {
+                        alert(`PpConstructor::createAttrs::  Неизвестный тип ("${type})"`);
+                    }
+                }
+                return a;
+            },
+            selectNode({i,selected}){
+                this.currentNode = selected;
+            },
+        },
         mounted(){
             this.currentNode = this.value.rootNode;
         },

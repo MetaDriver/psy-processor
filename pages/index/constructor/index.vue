@@ -13,6 +13,7 @@
 
 <script>
     import PpConstructor from "~/components/PpConstructor/PpConstructor.vue"
+
     export default {
         head: {
             title: 'PsyProcessor : Конструктор процессов'
@@ -25,12 +26,13 @@
                 process: {
                     processTitle: "Новый процесс",
                     processCategory: "common",
+                    type: 'process',
                     rootNode: {
                         type: 'loopList',
                         attrs: {
                             nodeName: {
                                 inpType: 'text',
-                                inpLabel: 'Имя узла (optional)',
+                                inpLabel: 'Название узла (optional)',
                                 value: 'root',
                             },
                             loopCount: {
@@ -45,7 +47,9 @@
             }
         },
         computed: {},
-        methods: {},
+        methods: {
+
+        },
         mounted(){
         },
     }
