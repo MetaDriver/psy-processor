@@ -20,12 +20,21 @@
                     <div  v-for="(attr, i) in attrs">
                         <ppcEditorInput
                             v-model="attr.val"
+                            @input="v=>{reffreshAttrs(attr.key, v)}"
                         />
                     </div>
                 </div>
             </div>
             <div class="struct-panel">
-                <div class="head">{{'Процесс:'}} {{value.processTitle}}</div>
+                <!--<div class="head">{{'Процесс:'}} {{value.processTitle}}</div>-->
+                <div class="head">
+                    <span>{{'Процесс:'}}</span>
+                    <input class="head-input"
+                           type="text"
+                           v-model="processTitle"
+                    />
+                    <!--{{value.processTitle}}-->
+                </div>
                 <div class="body pt-3 selected">
                     <ppcNode  class="selected"
                         :node="value.rootNode"
@@ -67,8 +76,18 @@
                         return { key: key, val: this.currentNode.attrs[key] };
                     });
             },
+            processTitle: {
+                get(){ return this.value.processTitle; },
+                set(v){
+                    this.$emit('input', {...this.value, processTitle: v});
+                }
+            },
         },
         methods: {
+            reffreshAttrs(key, value){
+                console.log("reffreshAttrs::", arguments);
+                this.currentNode.attrs = {...this.currentNode.attrs, [key]:value}
+            },
             createNewNode(){
                 return {
                     type: 'loopList',
@@ -132,6 +151,9 @@
                 this.currentNode = selected;
             },
         },
+        watch: {
+//            attrs
+        },
         mounted(){
             this.currentNode = this.value.rootNode;
         },
@@ -142,7 +164,11 @@
     .PpConstructor {
         width: 100%;
         height: auto;
-
+        input, select, textarea {
+            &:focus {
+                outline-color: hsl(150, 40%, 60%);
+            }
+        }
         .pp-panel {
             padding: 1px;
             display: flex;
@@ -169,6 +195,22 @@
                 border-bottom: 1px solid hsl(50, 30%, 75%);
                 color:  hsl(50, 30%, 45%);
                 font-weight: bold;
+                span {
+                    flex: 0 0 auto;
+                }
+                .head-input {
+                    flex: 1 1 auto;
+                    height: 28px;
+                    margin-left: 5px;
+                    padding-left: 5px;
+                    background-color: transparent;
+                    border: none;
+
+                    &:focus {
+                        background-color: white;
+                        border-color: hsl(50, 30%, 75%);
+                    }
+                }
             }
 
             .body {

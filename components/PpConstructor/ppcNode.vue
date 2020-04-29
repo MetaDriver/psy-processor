@@ -97,7 +97,7 @@
         padding: 2px 2px 2px 2px;
         margin: 4px 4px;
         background-color: hsl(50, 30%, 90%);
-        border: 1px solid hsl(50, 20%, 50%);
+        border: 1px solid hsl(50, 20%, 70%);
         border-radius: 4px;
         box-shadow: 0 0 5px 0 hsla(50, 20%, 20%, 0.1);
         color: hsl(50, 20%, 20%);
@@ -115,7 +115,8 @@
     .node-meta {
         display: flex;
         align-items: center;
-        background-color: hsl(150, 30%, 98%);
+        background-color: hsl(50, 20%, 95%);
+        border: 1px solid hsl(50, 20%, 80%);
         padding: 3px 8px;
         border-radius: 5px;
         margin: 0;
@@ -142,9 +143,9 @@
         display: flex;
         height: auto;
         align-items: flex-start;
+
         input, textarea {
             padding: 0px 5px 0px 5px;
-            font-size: 14px;
             line-height: 20px;
         }
         .pay-input {
@@ -152,16 +153,20 @@
             flex: 0 0 auto;
             width: 35px;
             height: 28px;
+            font-size: 14px;
             line-height: 28px;
             text-align: right;
             margin-right: 1px;
-            border-radius: 4px 0 0 0px;
+            border-radius: 4px 0 0 4px;
             border: 1px solid hsl(0, 0%, 90%);
         }
         .quest-input {
             display: block;
             flex: 1 1 auto;
+            height: 28px;
             min-height: 28px;
+            font-size: 16px;
+            line-height: 24px;
             border-radius: 0 4px 4px 0;
             border: 1px solid hsl(0, 0%, 90%);
         }
@@ -193,11 +198,11 @@
     .selected .ppcNode {
         &.selected {
         z-index: 5;
-            box-shadow: 0 0 0 1px hsl(50, 30%, 90%), 0 0 0 3px hsl(50, 20%, 50%);
+            box-shadow: 0 0 0 1px hsl(50, 30%, 80%), 0 0 0 2px hsl(50, 20%, 50%);
             &.focused {
                  background-color: hsl(150, 30%, 90%);
                  border: 1px solid hsl(150, 20%, 50%);
-                 box-shadow: 0 0 0 1px hsl(150, 30%, 90%), 0 0 0 4px hsl(150, 20%, 50%);
+                 box-shadow: 0 0 0 1px hsl(150, 30%, 80%), 0 0 0 3px hsl(150, 20%, 50%);
             }
         }
     }
