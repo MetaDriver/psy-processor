@@ -27,6 +27,8 @@
                     processTitle: "Новый процесс",
                     processCategory: "common",
                     type: 'process',
+                    toSave: false,
+                    toAdd: false,
                     rootNode: {
                         type: 'loopList',
                         attrs: {
