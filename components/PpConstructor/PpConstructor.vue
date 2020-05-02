@@ -21,7 +21,7 @@
                     <div v-for="(attr, i) in attrs">
                         <ppcEditorInput
                             v-model="attr.val"
-                            @input="v=>{reffreshAttrs(attr.key, v)}"
+                            @input="v=>{updateAttrs(attr.key, v)}"
                         />
                     </div>
                 </div>
@@ -88,14 +88,14 @@
             },
         },
         methods: {
-            reffreshAttrs(key, value) {
-                console.log("reffreshAttrs::", arguments);
+            updateAttrs(key, value) {
+                console.log("updateAttrs::", arguments);
                 this.currentNode.attrs = {...this.currentNode.attrs, [key]: value}
             },
-            createNewNode() {
+            createNewNode(type) {
                 return {
-                    type: 'loopList',
-                    attrs: this.createAttrs('loopList'),
+                    type: type,
+                    attrs: this.createAttrs(type),
                     list: [],
                 };
             },

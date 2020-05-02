@@ -4,7 +4,7 @@
 
 const nodeTypesArr = [
     {value: 'quest', title: 'Вопрос'},
-    {value: 'loopList', title: 'Циклический список',},
+    {value: 'loopList', title: 'Линейный список',},
     {value: 'randList', title: 'Вероятностный список'},
 ];
 

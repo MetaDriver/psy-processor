@@ -20,10 +20,15 @@
                         :index="idx"
                     />
                 </div>
-                <div class="node-item">
-                    <div class="add-button"
-                         @click="addNode">
+                <div class="node-item pos-rel">
+                    <div class="add-button">
                         <i class="ico ico-plus"></i>
+                    </div>
+                    <div class="add-list">
+                        <div class="add-item" v-for="mi in types.arr"
+                             @click="addNode(mi.value)">
+                            {{mi.title}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -59,8 +64,8 @@
         },
         computed: {},
         methods: {
-            addNode(){
-                this.node.list.push(this.createNodeFunc());
+            addNode(type){
+                this.node.list.push(this.createNodeFunc(type));
             },
             select({i, selected}){
                 console.log(arguments);
@@ -112,94 +117,123 @@
             flex-flow: column nowrap;
             /*padding-right: 5px;*/
         }
-    .node-meta {
-        display: flex;
-        align-items: center;
-        background-color: hsl(50, 20%, 95%);
-        border-bottom: 1px solid hsl(50, 20%, 80%);
-        padding: 3px 3px 3px 8px;
-        border-radius: 5px 5px 0 0;
-        margin: 0;
-    }
-
-    .node-list {
-        /*width: 100%;*/
-        margin: 0 0 0 15px;
-        padding: 0 7px 2px 0;
-    }
-
-    .key {
-        font-size: 11px;
-        font-weight: bold;
-        margin-right: 6px;
-    }
-
-    .value {
-        font-size: 13px;
-        margin-right: 12px;
-    }
-
-    .quest-container {
-        display: flex;
-        height: auto;
-        align-items: flex-start;
-
-        input, textarea {
-            padding: 0px 5px 0px 5px;
-            line-height: 20px;
+        .node-meta {
+            display: flex;
+            align-items: center;
+            background-color: hsl(50, 20%, 95%);
+            border-bottom: 1px solid hsl(50, 20%, 80%);
+            padding: 3px 3px 3px 8px;
+            border-radius: 5px 5px 0 0;
+            margin: 0;
         }
-        .pay-input {
-            display: block;
-            flex: 0 0 auto;
-            width: 35px;
-            height: 28px;
-            font-size: 14px;
-            line-height: 28px;
-            text-align: right;
-            margin-right: 3px;
-            /*border-radius: 4px 0 0 4px;*/
-            border-radius: 4px;
-            border: 1px solid hsl(0, 0%, 90%);
-        }
-        .quest-input {
-            display: block;
-            flex: 1 1 auto;
-            height: 28px;
-            min-height: 28px;
-            font-size: 16px;
-            line-height: 24px;
-            /*border-radius: 0 4px 4px 0;*/
-            border-radius: 4px;
-            border: 1px solid hsl(0, 0%, 90%);
-        }
-    }
-    .add-button {
-        width: 25px;
-        height: 25px;
-        margin: 2px auto 0 0;
-        background-color: hsl(120, 10%, 70%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        color: white;
-        border: 1px solid currentColor;
-        border-radius: 50%;
-        cursor: pointer;
-        transform: scale3d(0.9, 0.9, .1);
-        transition: all ease 0.8s;
 
-    &:hover {
-        background-color: hsl(120, 80%, 50%);
-        transform: scale3d(1, 1, .1);
-        transition: all ease 0.1s;
-    }
+        .node-list {
+            /*width: 100%;*/
+            margin: 0 0 0 15px;
+            padding: 0 7px 2px 0;
+        }
 
-    }
+        .key {
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .value {
+            font-size: 13px;
+            margin-right: 12px;
+        }
+
+        .quest-container {
+            display: flex;
+            height: auto;
+            align-items: flex-start;
+
+            input, textarea {
+                padding: 0px 5px 0px 5px;
+                line-height: 20px;
+            }
+            .pay-input {
+                display: block;
+                flex: 0 0 auto;
+                width: 35px;
+                height: 28px;
+                font-size: 14px;
+                line-height: 28px;
+                text-align: right;
+                margin-right: 3px;
+                /*border-radius: 4px 0 0 4px;*/
+                border-radius: 4px;
+                border: 1px solid hsl(0, 0%, 90%);
+            }
+            .quest-input {
+                display: block;
+                flex: 1 1 auto;
+                height: 28px;
+                min-height: 28px;
+                font-size: 16px;
+                line-height: 24px;
+                /*border-radius: 0 4px 4px 0;*/
+                border-radius: 4px;
+                border: 1px solid hsl(0, 0%, 90%);
+            }
+        }
+        .add-list {
+            display: none;
+            position: absolute;
+            z-index: 5;
+            top: 0;
+            left: 0;
+            width: auto;
+            height: auto;
+            padding: 5px 0;
+            flex-flow: column nowrap;
+            background-color: white;
+            border: 1px solid hsl(50, 20%, 80%);
+            .add-item {
+                padding: 2px 10px;
+                background-color: white;
+                cursor: pointer;
+                &:hover {
+                    background-color: hsl(150, 50%, 80%);
+                    color: black;
+
+                 }
+            }
+            &:hover {
+                display: flex;
+             }
+        }
+        .add-button {
+            width: 25px;
+            height: 25px;
+            margin: 2px auto 0 0;
+            background-color: hsl(120, 10%, 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: white;
+            border: 1px solid currentColor;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: scale3d(0.9, 0.9, .1);
+            transition: all ease 0.8s;
+
+            &:hover {
+                background-color: hsl(120, 80%, 50%);
+                transform: scale3d(1, 1, .1);
+                transition: all ease 0.1s;
+                & + .add-list {
+                    display: flex;
+                }
+            }
+
+        }
     }
     .selected .ppcNode {
         &.selected {
-        z-index: 5;
+        /*z-index: 5;*/
             box-shadow: 0 0 0 1px hsl(50, 30%, 80%), 0 0 0 2px hsl(50, 20%, 50%);
             &.focused {
                  background-color: hsl(150, 30%, 90%);
