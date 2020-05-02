@@ -1,7 +1,7 @@
 <template>
     <div class="ProcessList">
         <h2>ProcessList</h2>
-        <button @click="saves(file.content, file.fileName, typeFile)">Сохранить</button>
+        <button @click="saves(process, 'process', typeFile)">Сохранить</button>
         <button>
             <label class="add-item" for="id-input-file-2" style="margin-bottom: 0">
                 <input type="file" class="d-none" id="id-input-file-2"
@@ -11,7 +11,7 @@
                 Загрузить
             </label>
         </button>
-        <div>{{file}}</div>
+        <div v-if="file && file.content">{{file.content}}</div>
     </div>
 </template>
 
@@ -26,13 +26,37 @@
         data() {
             return {
                 file: null,
-                typeFile: 'txt'
+                typeFile: 'json',
+                process: {
+                    processTitle: "Новый процесс",
+                    processCategory: "common",
+                    type: 'process',
+                    toSave: false,
+                    toAdd: false,
+                    rootNode: {
+                        type: 'loopList',
+                        attrs: {
+                            nodeName: {
+                                inpType: 'text',
+                                inpLabel: 'Название узла (optional)',
+                                value: 'root',
+                            },
+                            loopCount: {
+                                inpType: 'number',
+                                inpLabel: 'Количество циклов',
+                                value: 0, // ноль означает бесконечный цикл
+                            },
+                        },
+                        list: [],
+                    }
+                }
             }
         },
         computed: {},
         methods: {
-            saves(data, filename, type) {
-                let file = new Blob([data], {type: type});
+            saves(dataJS, filename, type) {
+                let data = JSON.stringify(dataJS);
+                let file = new Blob([data], {type: 'application/'+type});
                 if (window.navigator.msSaveOrOpenBlob) // IE10+
                     window.navigator.msSaveOrOpenBlob(file, filename);
                 else { // Others
@@ -52,7 +76,8 @@
                 let file = event.target.files[0];
                 let reader = new FileReader();
                 reader.onload = () => {
-                    this.file = {content:reader.result, fileName: file.name};
+                    let content = JSON.parse(reader.result);
+                    this.file = {content, fileName: file.name};
                 };
                 reader.readAsText(file);
             },
