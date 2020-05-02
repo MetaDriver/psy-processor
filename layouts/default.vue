@@ -1,7 +1,7 @@
 <template>
     <div class="LayoutDefault">
-        <AppHeader/>
         <nuxt/>
+        <AppHeader/>
         <AppFooter/>
     </div>
 </template>
@@ -24,6 +24,7 @@
 
     .LayoutDefault {
         padding-top: 60px;
+        padding-bottom: 20px;
     }
 
     html {
@@ -77,4 +78,5 @@
         color: #fff;
         background-color: #35495e;
     }
+
 </style>
