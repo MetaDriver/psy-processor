@@ -1,12 +1,12 @@
 <template>
     <div class="ProcessList">
         <h2>ProcessList</h2>
-        <button @click="saves(file.content, file.fileName, 'txt')">Сохранить</button>
+        <button @click="saves(file.content, file.fileName, typeFile)">Сохранить</button>
         <button>
             <label class="add-item" for="id-input-file-2" style="margin-bottom: 0">
                 <input type="file" class="d-none" id="id-input-file-2"
                        value=""
-                       accept=".txt"
+                       :accept="'.'+typeFile"
                        @change.prevent="loadFile($event)">
                 Загрузить
             </label>
@@ -26,6 +26,7 @@
         data() {
             return {
                 file: null,
+                typeFile: 'txt'
             }
         },
         computed: {},
@@ -48,28 +49,10 @@
                 }
             },
             loadFile(event) {
-                console.log('processFile::event.target =', event.target);
                 let file = event.target.files[0];
-                console.log('processFile::event.target.files[0] =', file);
-                let content;
-                // if (file.text) {
-                //     file.text().then(v => {
-                //         console.log(v.toString());
-                //
-                //        content = v.toString();
-                //         this.addTab({content, fileName: file.name});
-                //     });
-                // } else {
-                //     content = file.toString();
-                //     console.log('content =',content);
-                //     this.addTab({content, fileName: file.name});
-                // }
-
                 let reader = new FileReader();
                 reader.onload = () => {
-                    content = reader.result;
-                    console.log('content (FR) =', content);
-                    this.file = {content, fileName: file.name};
+                    this.file = {content:reader.result, fileName: file.name};
                 };
                 reader.readAsText(file);
             },
