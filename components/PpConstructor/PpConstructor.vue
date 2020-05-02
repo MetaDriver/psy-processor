@@ -1,12 +1,21 @@
 <template>
     <div class="PpConstructor">
-
+        <button @click="saves(file.content, file.fileName, 'txt')">Сохранить</button>
+        <button>
+            <label class="add-item" for="id-input-file-2" style="margin-bottom: 0">
+                <input type="file" class="d-none" id="id-input-file-2"
+                       value=""
+                       accept=".txt"
+                       @change.prevent="loadFile($event)">
+                Загрузить
+            </label>
+        </button>
         <div class="pp-panel mt-4" v-if="!!currentNode">
             <div class="attr-panel">
                 <div class="head">{{'Редактор атрибутов'}}</div>
                 <div class="body">
                     <div class="ppcEditorInput mt-1">
-                    <!--<div class="type-select">-->
+                        <!--<div class="type-select">-->
                         <label for="type">Тип узла</label>
                         <select name="type" id="type"
                                 v-model="currentNode.type"
@@ -14,10 +23,11 @@
                             <option :value="item.value"
                                     v-for="item in types"
                                     :disabled="currentNode.attrs.nodeName.value==='root' && item.value==='quest'"
-                            >{{item.title}}</option>
+                            >{{item.title}}
+                            </option>
                         </select>
                     </div>
-                    <div  v-for="(attr, i) in attrs">
+                    <div v-for="(attr, i) in attrs">
                         <ppcEditorInput
                             v-model="attr.val"
                             @input="v=>{reffreshAttrs(attr.key, v)}"
@@ -36,16 +46,17 @@
                     <!--{{value.processTitle}}-->
                 </div>
                 <div class="body pt-3 selected">
-                    <ppcNode  class="selected"
-                        :node="value.rootNode"
-                        :owner="value"
-                        :createNodeFunc="createNewNode"
-                        @select="selectNode"
-                        :index="0"
+                    <ppcNode class="selected"
+                             :node="value.rootNode"
+                             :owner="value"
+                             :createNodeFunc="createNewNode"
+                             @select="selectNode"
+                             :index="0"
                     />
                 </div>
             </div>
         </div>
+        <div>{{file}}</div>
     </div>
 </template>
 
@@ -53,6 +64,7 @@
     import ppcEditorInput from "~/components/PpConstructor/ppcEditorInput.vue";
     import ppcNode from "~/components/PpConstructor/ppcNode.vue"
     import {nodeTypes} from "~/assets/js/const.js"
+
     export default {
         name: "PpConstructor",
         components: {ppcEditorInput, ppcNode},
@@ -68,34 +80,80 @@
 //                    {value:'randList', title:'Вероятностный список'},
 ////                    {value:'linearList', title:'Простой список'},
 //                ],
+                file: null,
             }
         },
         computed: {
-            attrs(){
-                return Object.keys(this.currentNode.attrs).map(key=>{
-                        return { key: key, val: this.currentNode.attrs[key] };
-                    });
+            attrs() {
+                return Object.keys(this.currentNode.attrs).map(key => {
+                    return {key: key, val: this.currentNode.attrs[key]};
+                });
             },
             processTitle: {
-                get(){ return this.value.processTitle; },
-                set(v){
+                get() {
+                    return this.value.processTitle;
+                },
+                set(v) {
                     this.$emit('input', {...this.value, processTitle: v});
                 }
             },
         },
         methods: {
-            reffreshAttrs(key, value){
-                console.log("reffreshAttrs::", arguments);
-                this.currentNode.attrs = {...this.currentNode.attrs, [key]:value}
+            saves(data, filename, type) {
+                let file = new Blob([data], {type: type});
+                if (window.navigator.msSaveOrOpenBlob) // IE10+
+                    window.navigator.msSaveOrOpenBlob(file, filename);
+                else { // Others
+                    let a = document.createElement("a"),
+                        url = URL.createObjectURL(file);
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(function() {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    }, 0);
+                }
             },
-            createNewNode(){
+            loadFile(event) {
+                console.log('processFile::event.target =', event.target);
+                let file = event.target.files[0];
+                console.log('processFile::event.target.files[0] =', file);
+                let content;
+                // if (file.text) {
+                //     file.text().then(v => {
+                //         console.log(v.toString());
+                //
+                //        content = v.toString();
+                //         this.addTab({content, fileName: file.name});
+                //     });
+                // } else {
+                //     content = file.toString();
+                //     console.log('content =',content);
+                //     this.addTab({content, fileName: file.name});
+                // }
+
+                let reader = new FileReader();
+                reader.onload = () => {
+                    content = reader.result;
+                    console.log('content (FR) =', content);
+                    this.file = {content, fileName: file.name};
+                };
+                reader.readAsText(file);
+            },
+            reffreshAttrs(key, value) {
+                console.log("reffreshAttrs::", arguments);
+                this.currentNode.attrs = {...this.currentNode.attrs, [key]: value}
+            },
+            createNewNode() {
                 return {
                     type: 'loopList',
                     attrs: this.createAttrs('loopList'),
                     list: [],
                 };
             },
-            changeNodeType(){
+            changeNodeType() {
                 console.log("! changeNodeType");
             },
             changeAttrs(type) {
@@ -108,7 +166,7 @@
              *
              * @param type String
              */
-            createAttrs(type){
+            createAttrs(type) {
                 let a = {
                     nodeName: {
                         inpType: 'text',
@@ -116,7 +174,7 @@
                         value: 'new node',
                     },
                 };
-                switch(type) {
+                switch (type) {
                     case 'quest': {
                         this.$set(a, 'quest', {
                             inpType: 'text',
@@ -147,14 +205,14 @@
                 }
                 return a;
             },
-            selectNode({i,selected}){
+            selectNode({i, selected}) {
                 this.currentNode = selected;
             },
         },
         watch: {
 //            attrs
         },
-        mounted(){
+        mounted() {
             this.currentNode = this.value.rootNode;
         },
     }
@@ -164,11 +222,13 @@
     .PpConstructor {
         width: 100%;
         height: auto;
+
         input, select, textarea {
             &:focus {
                 outline-color: hsl(150, 40%, 60%);
             }
         }
+
         .pp-panel {
             padding: 1px;
             display: flex;
@@ -177,13 +237,14 @@
             font-size: 13px;
             background-color: hsl(50, 30%, 98%);
 
-            &  >  * {
+            & > * {
                 min-height: 100%;
                 height: auto;
                 padding: 0px 0px 20px;
                 box-shadow: inset 0 0 2px 0 hsl(0, 0%, 80%);
                 border: 1px solid hsl(50, 30%, 80%);
             }
+
             .head {
                 width: 100%;
                 height: 35px;
@@ -193,11 +254,13 @@
                 background-color: hsl(50, 30%, 95%);
                 padding: 0 15px;
                 border-bottom: 1px solid hsl(50, 30%, 75%);
-                color:  hsl(50, 30%, 45%);
+                color: hsl(50, 30%, 45%);
                 font-weight: bold;
+
                 span {
                     flex: 0 0 auto;
                 }
+
                 .head-input {
                     flex: 1 1 auto;
                     height: 28px;
@@ -223,16 +286,20 @@
             }
 
         }
+
         .attr-panel {
             flex: 0 0 auto;
             width: 190px;
             border-radius: 10px 0 0 10px;
             margin-right: 1px;
+
             .head {
                 border-radius: 10px 0 0 0;
             }
+
             .body {
                 padding: 0;
+
                 .type-select {
                     height: 28px;
                     margin-bottom: 5px;
@@ -249,6 +316,7 @@
                         white-space: nowrap;
                         margin-bottom: 0;
                     }
+
                     select {
                         height: 28px;
                         width: calc(100% - 30px);
@@ -264,6 +332,7 @@
         .struct-panel {
             flex: 1 1 auto;
             border-radius: 0 10px 10px 0;
+
             .head {
                 border-radius: 0 10px 0 0;
             }
