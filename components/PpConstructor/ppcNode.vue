@@ -94,7 +94,7 @@
         position: relative;
         width: 100%;
         height: auto;
-        padding: 2px 2px 2px 2px;
+        /*padding: 2px 2px 2px 2px;*/
         margin: 4px 4px;
         background-color: hsl(50, 30%, 90%);
         border: 1px solid hsl(50, 20%, 70%);
@@ -110,22 +110,22 @@
             width: 100%;
             display: flex;
             flex-flow: column nowrap;
-            padding-right: 5px;
+            /*padding-right: 5px;*/
         }
     .node-meta {
         display: flex;
         align-items: center;
         background-color: hsl(50, 20%, 95%);
-        border: 1px solid hsl(50, 20%, 80%);
-        padding: 3px 8px;
-        border-radius: 5px;
+        border-bottom: 1px solid hsl(50, 20%, 80%);
+        padding: 3px 3px 3px 8px;
+        border-radius: 5px 5px 0 0;
         margin: 0;
     }
 
     .node-list {
         /*width: 100%;*/
         margin: 0 0 0 15px;
-        padding: 0;
+        padding: 0 7px 2px 0;
     }
 
     .key {
@@ -156,8 +156,9 @@
             font-size: 14px;
             line-height: 28px;
             text-align: right;
-            margin-right: 1px;
-            border-radius: 4px 0 0 4px;
+            margin-right: 3px;
+            /*border-radius: 4px 0 0 4px;*/
+            border-radius: 4px;
             border: 1px solid hsl(0, 0%, 90%);
         }
         .quest-input {
@@ -167,7 +168,8 @@
             min-height: 28px;
             font-size: 16px;
             line-height: 24px;
-            border-radius: 0 4px 4px 0;
+            /*border-radius: 0 4px 4px 0;*/
+            border-radius: 4px;
             border: 1px solid hsl(0, 0%, 90%);
         }
     }

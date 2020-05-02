@@ -4,10 +4,10 @@
             PsyProcessor
         </div>
         <div class="top-nav">
-            <nuxt-link class="menu-item" :to="{name:'index-home'}">Главная</nuxt-link>
-            <nuxt-link class="menu-item" :to="{name:'index-session'}">Сессия</nuxt-link>
-            <nuxt-link class="menu-item" :to="{name:'index-procs'}">Процессы</nuxt-link>
-            <nuxt-link class="menu-item" :to="{name:'index-constructor'}">Конструктор</nuxt-link>
+            <nuxt-link class="menu-item home" :to="{name:'index'}">Главная</nuxt-link>
+            <nuxt-link class="menu-item" :to="{name:'session'}">Сессия</nuxt-link>
+            <nuxt-link class="menu-item" :to="{name:'procs'}">Процессы</nuxt-link>
+            <nuxt-link class="menu-item" :to="{name:'constructor'}">Конструктор</nuxt-link>
         </div>
     </div>
 </template>
@@ -79,7 +79,7 @@
                         text-decoration: none;
                      }
                  }
-                &.nuxt-link-active {
+                &.nuxt-link-active:not(.home), &.nuxt-link-exact-active.home {
                     cursor: default;
                     /*color: black;*/
                     color:  hsl(50, 99%, 20%);
