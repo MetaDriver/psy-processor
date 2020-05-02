@@ -5,12 +5,36 @@
         <div class="node-container" v-if="node.type==='randList' || node.type==='loopList'">
             <label class="node-meta">
                 <div class="key">Тип:</div>
-                <div class="value">{{types.obj[node.type].title}}</div>
+                <div class="value">
+                    <!--{{types.obj[node.type].title}}-->
+                    <select class="head-select"
+                            name="type"
+                            id="ntype"
+                            v-model="node.type"
+                    >
+                            <!--@change="changeNodeType"-->
+                        <option :value="item.value"
+                                v-for="item in types.arr"
+                                :disabled="owner.type==='process' && item.value==='quest'"
+                        >{{item.title}}
+                        </option>
+                    </select>
+                </div>
                 <div class="key">Название:</div>
                 <div class="value">{{node.attrs.nodeName.value}}</div>
             </label>
-            <div class="node-list">
+            <div class="node-list" :class="node.type">
                 <div class="node-item" v-for="(child, idx) in node.list">
+                    <div class="pay-field" v-if="node.type==='randList'">
+                        <input class="pay-input"
+                               type="text"
+                               v-model="child.attrs.pay.value"
+                               v-number-only
+                        />
+                        <div class="pay-percent">
+                            {{(child.attrs.pay.value/paySum*100).toFixed(2)}}%
+                        </div>
+                    </div>
                     <ppcNode
                         :class="{selected: selectedChild===idx, unselected: selectedChild!==idx}"
                         :node="child"
@@ -34,9 +58,9 @@
             </div>
         </div>
         <div class="quest-container" v-else-if="node.type==='quest'">
-            <input class="pay-input" v-if="owner.type==='randList'"
-                   type="text"
-                   v-model="node.attrs.pay"/>
+            <!--<input class="pay-input" v-if="owner.type==='randList'"-->
+                   <!--type="text"-->
+                   <!--v-model="node.attrs.pay"/>-->
             <textarea class="quest-input" type="text"
                    v-model="node.quest"/>
         </div>
@@ -62,7 +86,13 @@
                 selectedChild: -1,
             }
         },
-        computed: {},
+        computed: {
+            paySum(){
+                return this.node.list.reduce((s,v)=>{
+                    return s + (v.attrs.pay.value * 1);
+                },0);
+            }
+        },
         methods: {
             addNode(type){
                 this.node.list.push(this.createNodeFunc(type));
@@ -122,15 +152,74 @@
             align-items: center;
             background-color: hsl(50, 20%, 95%);
             border-bottom: 1px solid hsl(50, 20%, 80%);
-            padding: 3px 3px 3px 8px;
+            padding: 0px 3px 0px 8px;
             border-radius: 5px 5px 0 0;
             margin: 0;
+            .head-select {
+                flex: 1 1 auto;
+                height: 28px;
+                margin-left: 1px;
+                padding-left: 1px;
+                background-color: transparent;
+                border: none;
+
+            &:focus {
+                 background-color: white;
+                 border-color: hsl(50, 30%, 75%);
+             }
+            }
         }
 
         .node-list {
             /*width: 100%;*/
-            margin: 0 0 0 15px;
-            padding: 0 7px 2px 0;
+            margin: 0 0 0 5px;
+            padding: 0 2px 2px 0;
+            .node-item {
+                display: flex;
+                .ppcNode {
+                    flex: 1 1 auto;
+                }
+                .pay-field {
+                    flex: 0 0 auto;
+                    width: 70px;
+                    height: 30px;
+                    border-radius: 4px;
+                    background-color: hsl(50, 20%, 95%);
+                    border: 1px solid hsl(50, 20%, 70%);
+                    /*border: 1px solid hsl(0, 0%, 90%);*/
+                    display: flex;
+                    align-items: center;
+                    margin: 4px 0px 4px 4px;
+                    padding: 0px;
+                    /*bc*/
+                    input.pay-input {
+                        flex: 0 0 auto;
+                        height: 28px;
+                        width: 22px;
+                        min-width: 22px;
+                        line-height: 28px;
+                        text-align: center;
+                        font-size: 15px;
+                        /*font-weight: bold;*/
+                        background-color: transparent;
+                        border-radius: 5px;
+                        border: none;
+                        &:focus {
+                             width: 26px;
+                             background-color: white;
+                             border-color: hsl(50, 30%, 75%);
+                         }
+                    }
+                    .pay-percent {
+                        flex: 1 1 auto;
+                        font-size: 12px;
+                        /*font-weight: bold;*/
+                        color: hsl(50, 30%, 55%);
+                        text-align: right;
+                        padding-right: 2px;
+                    }
+                }
+            }
         }
 
         .key {
@@ -148,7 +237,7 @@
             display: flex;
             height: auto;
             align-items: flex-start;
-
+            padding: 2px;
             input, textarea {
                 padding: 0px 5px 0px 5px;
                 line-height: 20px;
@@ -162,7 +251,6 @@
                 line-height: 28px;
                 text-align: right;
                 margin-right: 3px;
-                /*border-radius: 4px 0 0 4px;*/
                 border-radius: 4px;
                 border: 1px solid hsl(0, 0%, 90%);
             }

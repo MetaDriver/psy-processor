@@ -119,6 +119,12 @@
                         inpLabel: 'Название узла (optional)',
                         value: 'new node',
                     },
+                    pay: {
+                        inpType: 'number',
+                        inpLabel: 'Доля',
+                        value: 1,
+                        min: 1,
+                    },
                 };
                 switch (type) {
                     case 'quest': {
@@ -134,6 +140,7 @@
                             inpType: 'number',
                             inpLabel: 'Количество циклов',
                             value: 0, // ноль означает бесконечный цикл
+                            min: 0,
                         });
                         break;
                     }

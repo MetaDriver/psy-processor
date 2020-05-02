@@ -29,6 +29,7 @@ export default {
   */
   plugins: [
       { src: '~/plugins/localStorage.js', ssr: false },
+      { src: '~/plugins/v-util.js', ssr: false },
   ],
   /*
   ** Nuxt.js dev-modules
