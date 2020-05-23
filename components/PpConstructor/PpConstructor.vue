@@ -455,6 +455,9 @@
                 & + .ppcNode {
                     border-color: crimson;
                     box-shadow: inset 0 0 1px 2px white, inset  0 0 250px 4px crimson;
+                    & > *,  & > * > * {
+                          box-shadow: inset 0 0 1px 1px white, inset  0 0 250px 3px crimson;
+                      }
                 }
             }
         }

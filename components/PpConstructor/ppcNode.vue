@@ -67,7 +67,9 @@
                    <!--type="text"-->
                    <!--v-model="node.attrs.pay"/>-->
             <textarea class="quest-input" type="text"
-                   v-model="node.quest"/>
+                  v-model="node.attrs.quest.value"
+                  @input="processChanged"
+            />
         </div>
         <div class="node-container" v-else>
             <div class="type-error-node">
@@ -107,7 +109,11 @@
                 this.$emit('changed');
             },
             removeNode(idx){
-                this.node.list.splice(idx, 1);
+                if(this.node.list[idx].type==='quest') {
+                    this.node.list.splice(idx, 1);
+                } else {
+                    this.node.list.splice(idx, 1, ...this.node.list[idx].list);
+                }
                 this.$emit('changed');
             },
             select({i, selected}){

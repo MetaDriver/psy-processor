@@ -50,7 +50,10 @@
                         },
                         list: [],
                     }
-                }
+                },
+                debounceTime: 800,
+                debounceHandle: null,
+
             }
         },
         computed: {
@@ -58,7 +61,11 @@
         },
         methods: {
             processChanged(){
-                this.$store.commit('currentEditableProcess', this.process);
+                if(this.debounceHandle) { clearTimeout(this.debounceHandle); }
+                this.debounceHandle = setTimeout(()=>{
+                        this.$store.commit('currentEditableProcess', this.process);
+                        this.debounceHandle = null;
+                    }, this.debounceTime);
             },
         },
         mounted(){
