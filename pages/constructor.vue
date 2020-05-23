@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <PpConstructor v-model="process"/>
+                    <PpConstructor v-model="process" @changed="processChanged"/>
 
                 </div>
             </div>
@@ -12,7 +12,8 @@
 </template>
 
 <script>
-    import PpConstructor from "~/components/PpConstructor/PpConstructor.vue"
+    import PpConstructor from "~/components/PpConstructor/PpConstructor.vue";
+    import {mapState} from "vuex";
 
     export default {
         head: {
@@ -29,6 +30,10 @@
                     type: 'process',
                     toSave: false,
                     toAdd: false,
+                    vars: [
+                        {name: '$topic', value: '', },
+                        {name: '$last', value: [null], },
+                    ],
                     rootNode: {
                         type: 'loopList',
                         attrs: {
@@ -48,11 +53,18 @@
                 }
             }
         },
-        computed: {},
+        computed: {
+            ...mapState(['currentEditableProcess']),
+        },
         methods: {
-
+            processChanged(){
+                this.$store.commit('currentEditableProcess', this.process);
+            },
         },
         mounted(){
+            if(!!this.currentEditableProcess) {
+                this.process = this.currentEditableProcess;
+            }
         },
     }
 </script>

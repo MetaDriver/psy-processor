@@ -4,7 +4,7 @@
         <div class="pp-panel mt-4" v-if="!!currentNode">
             <div class="attr-panel">
                 <div class="head">{{'Редактор атрибутов'}}</div>
-                <div class="body">
+               <div class="body">
                     <div class="ppcEditorInput mt-1">
                         <!--<div class="type-select">-->
                         <label for="type">Тип узла</label>
@@ -22,10 +22,12 @@
                         <ppcEditorInput
                             v-model="attr.val"
                             @input="v=>{updateAttrs(attr.key, v)}"
+                            :process="value"
                         />
                     </div>
                 </div>
             </div>
+
             <div class="struct-panel">
                 <!--<div class="head">{{'Процесс:'}} {{value.processTitle}}</div>-->
                 <div class="head">
@@ -33,17 +35,51 @@
                     <input class="head-input"
                            type="text"
                            v-model="processTitle"
+                           @change="processChanged"
                     />
                     <!--{{value.processTitle}}-->
+                    <div class="pp-tabs head-tabs">
+                        <div class="pp-tab" @click="activeTab=0"
+                             :class="{active:activeTab===0}">
+                            Структура
+                        </div>
+                        <div class="pp-tab" @click="activeTab=1"
+                             :class="{active: activeTab===1}">
+                            Переменные
+                        </div>
+                        <div class="pp-tab" @click="activeTab=2"
+                             :class="{active: activeTab===2}">
+                            Код
+                        </div>
+                    </div>
+
                 </div>
                 <div class="body pt-3 selected">
-                    <ppcNode class="selected"
+                    <ppcNode class="selected"     v-if="activeTab===0"
                              :node="value.rootNode"
                              :owner="value"
                              :createNodeFunc="createNewNode"
                              @select="selectNode"
+                             @changed="processChanged"
                              :index="0"
                     />
+                    <div class="variables-wrap"  v-else-if="activeTab===1">
+                        Переменные процесса
+                        <div class="var-item" v-for="(v, i) in value.vars">
+                            <input class="head-input"
+                                   type="text"
+                                   v-model="v.name"
+                            />
+                            &nbsp;({{v.value}})
+                        </div>
+                        <div class="add-button" @click="createNewVar" >
+                            <i class="ico ico-plus"></i>
+                        </div>
+                    </div>
+                    <div class="code-wrap"  v-else>
+                        <h4>Код просесса</h4>
+                        <pre class="code-view">{{value}}</pre>
+                    </div>
                 </div>
             </div>
         </div>
@@ -55,7 +91,8 @@
     import ppcNode from "~/components/PpConstructor/ppcNode.vue"
     import {nodeTypes} from "~/assets/js/const.js"
 
-    export default {
+//    let vm = null;
+    export default  {
         name: "PpConstructor",
         components: {ppcEditorInput, ppcNode},
         props: ['value'],
@@ -64,12 +101,8 @@
                 currentNode: null,
                 currentNodeLastType: 'loopList',
                 types: nodeTypes.arr,
-//                    [
-//                    {value:'quest', title:'Вопрос'},
-//                    {value:'loopList', title:'Циклический список',},
-//                    {value:'randList', title:'Вероятностный список'},
-////                    {value:'linearList', title:'Простой список'},
-//                ],
+                activeTab: 0,
+
             }
         },
         computed: {
@@ -88,9 +121,13 @@
             },
         },
         methods: {
+            processChanged(){
+                this.$emit('changed');
+            },
             updateAttrs(key, value) {
                 console.log("updateAttrs::", arguments);
-                this.currentNode.attrs = {...this.currentNode.attrs, [key]: value}
+                this.currentNode.attrs = {...this.currentNode.attrs, [key]: value};
+                this.$emit('changed');
             },
             createNewNode(type) {
                 return {
@@ -107,6 +144,8 @@
                     ...createAttrs(this.currentNode.type),
                     ...this.currentNode.attrs,
                 };
+
+                this.$emit('changed');
             },
             /**
              *
@@ -133,6 +172,12 @@
                             inpLabel: 'Вопрос',
                             value: '',
                         });
+                        this.$set(a, 'out', {
+                            inpType: 'select',
+                            inpLabel: 'Output vars',
+                            value: null,
+                            options: 'userVars'
+                        });
                         break;
                     }
                     case 'loopList': {
@@ -158,6 +203,14 @@
                 }
                 return a;
             },
+            createNewVar(){
+                this.value.vars.push({
+                    name: '$newVar',
+                    value: '',
+                });
+
+                this.$emit('changed');
+            },
             selectNode({i, selected}) {
                 this.currentNode = selected;
             },
@@ -166,7 +219,9 @@
 //            attrs
         },
         mounted() {
+//            vm = this;
             this.currentNode = this.value.rootNode;
+
         },
     }
 </script>
@@ -240,6 +295,59 @@
 
         }
 
+        .pp-tabs {
+            height: 28px;
+            width: 100%;
+            padding: 0px 1px;
+            border-bottom: 1px solid  hsl(50, 30%, 70%);
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            .pp-tab {
+                width: auto;
+                height: 100%;
+                border: 1px solid  hsl(50, 30%, 70%);
+                border-bottom-color: transparent;
+                border-top-color: transparent;
+                margin-right: -2px;
+                display: flex;
+                align-items: center;
+                padding: 0 8px;
+                /*background-color:  hsl(50, 40%, 98%);*/
+                cursor: pointer;
+                &:first-child {
+                     border-left: 1px solid hsl(50, 30%, 70%);
+                 }
+                &:hover {
+                    background-color:  hsl(150, 40%, 90%);
+                }
+                &.active {
+                    background-color:  hsl(150, 40%, 99%);
+                    color: hsl(150, 20%, 45%);
+                    text-shadow: 0 0 0 hsl(150, 20%, 19%);
+                    border-radius: 8px 8px 0 0 / 1px 1px 0 0;
+                    z-index: 5;
+                    height: calc(100% + 4px);
+                    border-bottom-color: hsl(50, 40%, 98%) !important;
+                }
+            }
+            &.head-tabs {
+                order: 10;
+                align-self: flex-end;
+                margin-bottom: -1px;
+                margin-left: auto;
+                width: auto;
+                .pp-tab {
+                    &.active {
+                        border: 1px solid hsl(50, 30%, 70%);
+                        background-color: transparent;
+                        background-image: linear-gradient(to bottom,
+                            hsla(60, 27%, 98%, 0), hsl(60, 27%, 99%) 30%, hsl(60, 27%, 98%));
+                     }
+                }
+             }
+        }
+
         .attr-panel {
             flex: 0 0 auto;
             width: 190px;
@@ -279,6 +387,14 @@
                         border: 1px solid hsl(0, 0%, 90%);
                     }
                 }
+                .var-item {
+                    height: 32px;
+                    width: auto;
+                    padding: 2px 10px;
+                    display: flex;
+                    align-items: center;
+                    background-color: hsla(60, 27%, 98%, 0);
+                }
             }
         }
 
@@ -291,5 +407,56 @@
             }
         }
 
+        .add-button {
+            width: 25px;
+            height: 25px;
+            margin: 2px auto 0 0;
+            background-color: hsl(120, 10%, 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: white;
+            border: 1px solid currentColor;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: scale3d(0.9, 0.9, .1);
+            transition: all ease 0.8s;
+
+            &:hover {
+                 background-color: hsl(120, 80%, 50%);
+                 transform: scale3d(1, 1, .1);
+                 transition: all ease 0.1s;
+            & + .add-list {
+                    display: flex;
+                }
+            }
+
+        }
+        .delete-button {
+            flex: 0 0 auto;
+            order: 10;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: hsl(0, 100%, 97%);
+            color: hsl(348, 33%, 67%);
+            &:hover {
+                 font-size: 18px;
+                 /*background-color: hsl(0, 100%, 97%);*/
+                 background-color: hsl(348, 70%, 57%);
+                 /*color: hsl(348, 33%, 67%);*/
+                color: white;
+                & + .ppcNode {
+                    border-color: crimson;
+                    box-shadow: inset 0 0 1px 2px white, inset  0 0 250px 4px crimson;
+                }
+            }
+        }
     }
 </style>

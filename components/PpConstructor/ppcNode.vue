@@ -35,14 +35,19 @@
                             {{(child.attrs.pay.value/paySum*100).toFixed(2)}}%
                         </div>
                     </div>
+                    <div class="delete-button" @click="removeNode(idx)">
+                        <i class="ico ico-cancel-circle"></i>
+                    </div>
                     <ppcNode
                         :class="{selected: selectedChild===idx, unselected: selectedChild!==idx}"
                         :node="child"
                         :owner="node"
                         :createNodeFunc="createNodeFunc"
                         @select="select"
+                        @changed="processChanged"
                         :index="idx"
                     />
+
                 </div>
                 <div class="node-item pos-rel">
                     <div class="add-button">
@@ -94,8 +99,16 @@
             }
         },
         methods: {
+            processChanged(){
+                this.$emit('changed');
+            },
             addNode(type){
                 this.node.list.push(this.createNodeFunc(type));
+                this.$emit('changed');
+            },
+            removeNode(idx){
+                this.node.list.splice(idx, 1);
+                this.$emit('changed');
             },
             select({i, selected}){
                 console.log(arguments);
@@ -292,32 +305,7 @@
                 display: flex;
              }
         }
-        .add-button {
-            width: 25px;
-            height: 25px;
-            margin: 2px auto 0 0;
-            background-color: hsl(120, 10%, 70%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            color: white;
-            border: 1px solid currentColor;
-            border-radius: 50%;
-            cursor: pointer;
-            transform: scale3d(0.9, 0.9, .1);
-            transition: all ease 0.8s;
 
-            &:hover {
-                background-color: hsl(120, 80%, 50%);
-                transform: scale3d(1, 1, .1);
-                transition: all ease 0.1s;
-                & + .add-list {
-                    display: flex;
-                }
-            }
-
-        }
     }
     .selected .ppcNode {
         &.selected {

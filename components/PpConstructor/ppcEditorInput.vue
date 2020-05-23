@@ -2,16 +2,24 @@
     <div class="ppcEditorInput v-if=!!value">
         <label class="title" :for="value.key">{{value.inpLabel}}</label>
         <div v-if="value.inpType==='number'">
-            <input type="number" :id="value.key" min="0"
+            <input type="number" :id="value.inpLabel" min="0"
                    v-model="model"/>
         </div>
         <div v-else-if="value.inpType==='select'">
-            <select v-model="model" :id="value.key" >
+            <select v-model="model" v-if="Array.isArray(value.options)"
+                    :id="value.inpLabel"
+                    >
                 <option :value="opt.value" v-for="opt in value.options">{{opt.title}}</option>
             </select>
+            <select v-model="model" v-else-if="typeof(value.options)==='string' && !![value.options]"
+                    :id="value.inpLabel+'--str'"
+                    >
+                <option :value="opt.value" v-for="opt in this[value.options]">{{opt.title}}</option>
+            </select>
+            <div class="error" v-else>Bad select ('options' undefined)</div>
         </div>
         <div v-else>
-            <input type="text" :id="value.key"
+            <input type="text" :id="value.inpLabel"
                    v-model="model"/>
         </div>
     </div>
@@ -21,7 +29,7 @@
     export default {
         name: "ppcEditorInput",
         components: {},
-        props: ['value'],
+        props: ['value', 'process'],
         data() {
             return {}
         },
@@ -31,6 +39,15 @@
                 set(v){
                     this.$emit('input', {...this.value, value: v});
                 },
+            },
+            userVars(){
+                let opts = [...this.process.vars];
+                opts.shift();
+                opts.shift();
+                return opts.map(v=>({
+                        title: v.name,
+                        value: v.name,
+                    }));
             },
         },
         methods: {},

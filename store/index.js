@@ -22,18 +22,21 @@ const store = () => {
             screen: {},
             mobileMenuActive: false,
             mobileMenuTransition: false,
-
+            currentEditableProcess: null,
             token: null,
             user: null,
             //curLang: 'en',
             //verbs: verbs['en'],
             isMobile: false,
             blur: false,
-            testData: 'testData',
+            testData: '',
         },
         mutations: {
             testData(state, v) {
                 state.testData = v;
+            },
+            currentEditableProcess(state, v) {
+                state.currentEditableProcess = v;
             },
             mobileMenuActive(state, v) {
                 state.mobileMenuTransition = true;
