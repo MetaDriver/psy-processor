@@ -56,6 +56,7 @@
                 </div>
                 <div class="body pt-3 selected">
                     <ppcNode class="selected"     v-if="activeTab===0"
+                             ref="rootNode"
                              :node="value.rootNode"
                              :owner="value"
                              :createNodeFunc="createNewNode"
@@ -134,6 +135,7 @@
                     type: type,
                     attrs: this.createAttrs(type),
                     list: [],
+                    forKey: ( Math.random()*(1<<29 - 1) % 2047 ).toString(16),
                 };
             },
             changeNodeType() {
@@ -214,6 +216,10 @@
             selectNode({i, selected}) {
                 this.currentNode = selected;
             },
+            unselectAllChildren(){
+                console.log('!! unselectAllChildren  fired !!');
+                this.$refs.rootNode.unselect();
+            },
         },
         watch: {
 //            attrs
@@ -221,7 +227,8 @@
         mounted() {
 //            vm = this;
             this.currentNode = this.value.rootNode;
-
+            this.$el.addEventListener('unselectAllNodes', this.unselectAllChildren);
+            console.log('PpConstructor::this =', this);
         },
     }
 </script>
@@ -439,15 +446,16 @@
             cursor: pointer;
             width: 18px;
             height: 18px;
+            margin-top: 12px;
             border-radius: 50%;
-            font-size: 14px;
+            font-size: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: hsl(0, 100%, 97%);
             color: hsl(348, 33%, 67%);
             &:hover {
-                 font-size: 18px;
+                 font-size: 12px;
                  /*background-color: hsl(0, 100%, 97%);*/
                  background-color: hsl(348, 70%, 57%);
                  /*color: hsl(348, 33%, 67%);*/

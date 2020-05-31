@@ -1,7 +1,8 @@
 <template>
 
     <div class="ppcNode" :class="[{focused},node.type]"
-         @click.stop="select({i:index, selected: node})">
+         @click.stop="focus">
+         <!--@click.stop="select({i:index, selected: node})">-->
         <div class="node-container" v-if="node.type==='randList' || node.type==='loopList'">
             <label class="node-meta">
                 <div class="key">Тип:</div>
@@ -23,9 +24,23 @@
                 <div class="key">Название:</div>
                 <div class="value">{{node.attrs.nodeName.value}}</div>
             </label>
+
             <div class="node-list" :class="node.type">
-                <div class="node-item" v-for="(child, idx) in node.list">
-                    <div class="pay-field" v-if="node.type==='randList'">
+
+                <div class="node-item" v-for="(child, idx) in node.list" :key="child.forKey">
+                    <div class="insert-bar">
+                        <div class="insert-button">
+                            <i class="ico ico-plus"></i>
+                        </div>
+                        <div class="add-list">
+                            <div class="add-item" v-for="mi in types.arr"
+                                 @click="addNode(mi.value, idx)">
+                                {{mi.title}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pay-field" v-if="node.type==='randList'"
+                         @click.stop="$children[idx].focus">
                         <input class="pay-input"
                                type="text"
                                v-model="child.attrs.pay.value"
@@ -35,11 +50,13 @@
                             {{(child.attrs.pay.value/paySum*100).toFixed(2)}}%
                         </div>
                     </div>
+
                     <div class="delete-button" @click="removeNode(idx)">
-                        <i class="ico ico-cancel-circle"></i>
+                        <i class="ico ico-minus"></i>
                     </div>
+
                     <ppcNode
-                        :class="{selected: selectedChild===idx, unselected: selectedChild!==idx}"
+                        :class="{selected: selectedChild===idx}"
                         :node="child"
                         :owner="node"
                         :createNodeFunc="createNodeFunc"
@@ -49,6 +66,7 @@
                     />
 
                 </div>
+
                 <div class="node-item pos-rel">
                     <div class="add-button">
                         <i class="ico ico-plus"></i>
@@ -104,8 +122,12 @@
             processChanged(){
                 this.$emit('changed');
             },
-            addNode(type){
-                this.node.list.push(this.createNodeFunc(type));
+            addNode(type, idx){
+                if(idx===undefined) {
+                    this.node.list.push(this.createNodeFunc(type));
+                } else {
+                    this.node.list.splice(idx, 0, this.createNodeFunc(type));
+                }
                 this.$emit('changed');
             },
             removeNode(idx){
@@ -116,18 +138,41 @@
                 }
                 this.$emit('changed');
             },
+//            select({i, selected}){
+//                console.log(arguments);
+//                console.log(selected);
+//                this.$emit('select', {i:this.index, selected});
+//                if (selected !== this.node) {
+//                    this.selectedChild = i;
+//                    this.focused = false;
+//                } else {
+//                    this.selectedChild = -1;
+//                    this.focused = true;
+//                }
+//            },
             select({i, selected}){
-                console.log(arguments);
-                console.log(selected);
                 this.$emit('select', {i:this.index, selected});
-                if (selected !== this.node) {
                     this.selectedChild = i;
                     this.focused = false;
-                } else {
-                    this.selectedChild = -1;
-                    this.focused = true;
-                }
-
+            },
+            focus(){
+                this.unselectAllNodes();
+                this.$emit('select', {i:this.index, selected:this.node});
+                this.selectedChild = -1;
+                this.focused = true;
+            },
+            unselect(){
+                console.log('unselect !', this.index);
+                this.focused = false;
+                this.selectedChild = -1;
+                this.$children.forEach(v => v.unselect());
+            },
+            unselectAllNodes(){
+                console.log('!! unselectAllNodes  fired !!');
+                let e = new Event('unselectAllNodes', {
+                    bubbles: true,
+                });
+                this.$el.dispatchEvent(e);
             },
         },
         watch: {
@@ -137,8 +182,23 @@
                     this.focused = false;
                 }
             },
+            "node.type"(v, old) {
+                console.log(`Node Type Changed !! (${old} ==> ${v})`);
+                if(old==='quest') {
+                    this.node.list.push(this.createNodeFunc('quest'));
+                    this.node.list[0].attrs.quest.value = this.node.attrs.quest.value;
+                    this.node.attrs.quest.value = '';
+                } else if(v==='quest') {
+//                    this.node.type = old;
+//                    this.owner.removeNode(this.index);
+                    this.owner.list.splice(this.index+1, 0, ...this.node.list);
+                    this.node.list.length = 0;
+                }
+                this.processChanged();
+            }
         },
         mounted(){
+
         },
     }
 </script>
@@ -194,6 +254,7 @@
             margin: 0 0 0 5px;
             padding: 0 2px 2px 0;
             .node-item {
+                position: relative;
                 display: flex;
                 .ppcNode {
                     flex: 1 1 auto;
@@ -238,6 +299,54 @@
                         padding-right: 2px;
                     }
                 }
+            }
+        }
+
+        .insert-bar {
+            height: 10px;
+            width: calc(100% - 22px);
+            position: absolute;
+            left: 0;
+            top: -5px;
+            &:hover {
+                background-color: hsla(120, 10%, 70%, 0.3);
+                .insert-button {
+                    display: flex;
+                }
+            }
+            .insert-button {
+                display: none;
+                position: absolute;
+                height: 20px;
+                width: 20px;
+                left: -4px;
+                top: -7px;
+                margin: 2px auto 0 0;
+                background-color: hsl(120, 10%, 70%);
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                /*line-height: 5px;*/
+                color: white;
+                border: 1px solid currentColor;
+                border-radius: 50%;
+                cursor: pointer;
+                /*transform: scale3d(0.9, 0.9, .1);*/
+                transition: all ease 0.8s;
+
+                &:hover {
+                     background-color: hsl(120, 80%, 50%);
+                     /*transform: scale3d(1, 1, .1);*/
+                     transition: all ease 0.2s;
+                & + .add-list {
+                        display: flex;
+                    }
+                }
+
+            }
+            .add-list {
+                top: -5px;
+                left: -3px;
             }
         }
 
@@ -311,28 +420,14 @@
                 display: flex;
              }
         }
-
-    }
-    .selected .ppcNode {
         &.selected {
-        /*z-index: 5;*/
-            box-shadow: 0 0 0 1px hsl(50, 30%, 80%), 0 0 0 2px hsl(50, 20%, 50%);
+             /*z-index: 5;*/
+             box-shadow: 0 0 0 1px hsl(50, 30%, 80%), 0 0 0 2px hsl(50, 20%, 50%);
             &.focused {
                  background-color: hsl(150, 30%, 90%);
                  border: 1px solid hsl(150, 20%, 50%);
                  box-shadow: 0 0 0 1px hsl(150, 30%, 80%), 0 0 0 3px hsl(150, 20%, 50%);
-            }
-        }
-    }
-    .unselected .ppcNode {
-        &.selected {
-            box-shadow: none;
-        &.focused {
-             background-color: hsl(50, 30%, 90%);
-             border: 1px solid hsl(50, 20%, 50%);
-             box-shadow: none;
-             /*box-shadow: inset 0 0 0 1px hsl(50, 30%, 90%), inset 0 0 0 3px hsl(50, 20%, 50%);*/
-         }
+             }
         }
     }
 
